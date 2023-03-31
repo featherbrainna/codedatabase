@@ -96,7 +96,7 @@ public class GenericReflectionTest {
             TypeVariable<?> t = (TypeVariable<?>) type;
             System.out.print(t.getName());
             if (isDefinition){
-                printTypes(t.getBounds()," extends"," & ","",false);
+                printTypes(t.getBounds()," extends "," & ","",false);
             }
         }else if (type instanceof WildcardType){//3.如果接收的是一个通配符
             WildcardType t = (WildcardType) type;
