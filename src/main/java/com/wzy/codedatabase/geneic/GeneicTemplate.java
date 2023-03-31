@@ -1,7 +1,12 @@
 package com.wzy.codedatabase.geneic;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
@@ -104,10 +109,26 @@ class ArrayAlg{
     }
 }
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 class Employee {
+    private String name;
+    private BigDecimal bonus;
 
+    public void setBonus(int bonus) {
+        this.bonus = new BigDecimal(bonus);
+    }
 }
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 class Manager extends Employee {
+    private String name;
+    private BigDecimal bonus;
 
+    public void setBonus(int bonus) {
+        this.bonus = new BigDecimal(bonus);
+    }
 }
