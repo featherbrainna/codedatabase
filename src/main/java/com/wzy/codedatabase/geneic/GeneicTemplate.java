@@ -89,3 +89,25 @@ public class GeneicTemplate<T> {
                 '}';
     }
 }
+
+class ArrayAlg{
+    //根据泛型类对象得到其值，调用泛型
+    public void getPairValue(GeneicTemplate<? extends Employee> pair){
+        pair.getFirst();
+        //pair.setFirst(new Manager());无法更改
+    }
+
+    //根据泛型类对象更改其值，调用泛型
+    public void setPairValue(GeneicTemplate<? super Manager> pair){
+        pair.setFirst(new Manager());
+        Object first = pair.getFirst();//访问受限，只能赋给Object
+    }
+}
+
+class Employee {
+
+}
+
+class Manager extends Employee {
+
+}
