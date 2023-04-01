@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 /**
+ * 反射获取泛型类信息
  * @author 王忠义
  * @version 1.0
  * @date: 2023/3/31 16:16
- * 反射获取泛型类信息
  */
 public class GenericReflectionTest {
     public static void main(String[] args){
@@ -36,7 +36,10 @@ public class GenericReflectionTest {
         }
     }
 
-    //通过反射得到泛型类的信息（Class<?> cl|类名、类型变量、父类、接口）
+    /**
+     * 通过反射得到泛型类的信息（{@code Class<?> cl}|类名、类型变量、父类、接口）
+     * @param cl 要打印的类对象
+     */
     private static void printClass(Class<?> cl) {
         System.out.print(cl);
         //1.返回泛型类的类型变量cl.getTypeParameters()（泛型可能多个故printTypes）
@@ -53,7 +56,10 @@ public class GenericReflectionTest {
         System.out.println();
     }
 
-    //通过反射得到泛型方法的信息（Method m|修饰符、类型变量、返回类型、方法名、参数类型）
+    /**
+     * 通过反射得到泛型方法的信息（Method m|修饰符、类型变量、返回类型、方法名、参数类型）
+     * @param m 要打印的方法对象
+     */
     private static void printMethod(Method m) {
         String name = m.getName();
         //1.返回方法的修饰符
@@ -73,7 +79,14 @@ public class GenericReflectionTest {
         System.out.println(")");
     }
 
-    //打印所有类型信息
+    /**
+     * 打印所有类型信息
+     * @param types 类型对象
+     * @param pre
+     * @param sep
+     * @param suf
+     * @param isDefinition
+     */
     private static void printTypes(Type[] types, String pre, String sep, String suf, boolean isDefinition) {
         if (pre.equals(" extends ") && Arrays.equals(types,new Type[]{Object.class})) return;
         if (types.length>0) System.out.print(pre);
@@ -85,7 +98,11 @@ public class GenericReflectionTest {
         if (types.length>0) System.out.print(suf);
     }
 
-    //打印单个类型信息！！！核心底层关于泛型的类型分析
+    /**
+     * 打印单个类型信息！！！核心底层关于泛型的类型分析
+     * @param type
+     * @param isDefinition
+     */
     private static void printType(Type type, boolean isDefinition) {
         //1.如果类型是一个类Class
         if (type instanceof Class){
