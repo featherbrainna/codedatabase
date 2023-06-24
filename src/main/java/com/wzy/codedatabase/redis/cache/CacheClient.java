@@ -6,6 +6,8 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,9 @@ public class CacheClient {
      */
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private RedissonClient redissonClient;
 
     /**
      * 写入redis任意对象数据，并设置过期时间
@@ -136,7 +141,7 @@ public class CacheClient {
      */
     public <R,ID> R queryWithLogicalExpire(
             String keyPrefix,ID id,String lockPrefix,Class<R> type,Function<ID,R> dbFallBack,
-            Long time,TimeUnit unit){
+            Long time,TimeUnit unit) throws InterruptedException {
         String key = keyPrefix + id;
         //1.从redis查询信息缓存（根据id）
         String json = stringRedisTemplate.opsForValue().get(key);
@@ -224,7 +229,7 @@ public class CacheClient {
      */
     public <R,ID> List<R> queryWithLogicalExpireForArr(
             String keyPrefix,ID id,String lockPrefix,Class<R> type,Function<ID,List<R>> dbFallBack,
-            Long time,TimeUnit unit){
+            Long time,TimeUnit unit) throws InterruptedException {
         String key = keyPrefix + id;
         //1.从redis查询信息缓存（根据id）
         String json = stringRedisTemplate.opsForValue().get(key);
@@ -316,7 +321,7 @@ public class CacheClient {
      */
     public <R,ID> R queryWithMutex(
             String keyPrefix,ID id,String lockPrefix,Class<R> type,Function<ID,R> dbFallBack,
-            Long time,TimeUnit unit){
+            Long time,TimeUnit unit) throws InterruptedException {
         String key = keyPrefix + id;
         //1.从redis查询商铺信息缓存（根据商铺id）
         String json = stringRedisTemplate.opsForValue().get(key);
@@ -400,7 +405,7 @@ public class CacheClient {
      */
     public <R,ID> List<R> queryWithMutexForArr(
             String keyPrefix,ID id,String lockPrefix,Class<R> type,Function<ID,List<R>> dbFallBack,
-            Long time,TimeUnit unit){
+            Long time,TimeUnit unit) throws InterruptedException {
         String key = keyPrefix + id;
         //1.从redis查询商铺信息缓存（根据商铺id）
         String json = stringRedisTemplate.opsForValue().get(key);
@@ -474,8 +479,10 @@ public class CacheClient {
      * @param key 锁的名字
      * @return
      */
-    public boolean tryLock(String key){
-        Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key, "1", 10, TimeUnit.SECONDS);
+    public boolean tryLock(String key) throws InterruptedException {
+        RLock lock = redissonClient.getLock(key);
+        boolean flag = lock.tryLock(-1L,10L,TimeUnit.SECONDS);
+        //Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key, "1", 10, TimeUnit.SECONDS);
         return BooleanUtil.isTrue(flag);
     }
 
@@ -484,7 +491,9 @@ public class CacheClient {
      * @param key 锁的名字
      */
     public void unlock(String key){
-        stringRedisTemplate.delete(key);
+        RLock lock = redissonClient.getLock(key);
+        lock.unlock();
+        //stringRedisTemplate.delete(key);
     }
 
     /**
